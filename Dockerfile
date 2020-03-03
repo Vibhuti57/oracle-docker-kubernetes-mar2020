@@ -2,7 +2,7 @@ FROM fedora
 # This will be base image.
 MAINTAINER vibhuti
 # Developer infor
-ARG web=http
+ARG web=httpd
 # This variable will not be available in container. 
 ENV server=$web
 ENV color=black
