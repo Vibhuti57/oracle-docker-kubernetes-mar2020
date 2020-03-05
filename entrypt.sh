@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cp /opt/docker.png /var/www/html/docker.png
 if [ "$color" == "black" ]
 
 then
