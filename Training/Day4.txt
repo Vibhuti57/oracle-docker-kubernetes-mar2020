@@ -1,0 +1,718 @@
+[vibhuti@ip-172-31-39-204 ~]$ kubectl version
+Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.3", GitCommit:"06ad960bfd03b39c8310aaf92d1e7c12ce618213", GitTreeState:"clean", BuildDate:"2020-02-11T18:14:22Z", GoVersion:"go1.13.6", Compiler:"gc", Platform:"linux/amd64"}
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+[vibhuti@ip-172-31-39-204 ~]$ kubectl version --client
+Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.3", GitCommit:"06ad960bfd03b39c8310aaf92d1e7c12ce618213", GitTreeState:"clean", BuildDate:"2020-02-11T18:14:22Z", GoVersion:"go1.13.6", Compiler:"gc", Platform:"linux/amd64"}
+
+---------------------------------------------------------------------------------------------------------
+vibhuaga-Mac:~ vibhutiagarwal$ curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 47.2M  100 47.2M    0     0  10.3M      0  0:00:04  0:00:04 --:--:-- 10.4M
+vibhuaga-Mac:~ vibhutiagarwal$ chmod +x ./kubectl
+vibhuaga-Mac:~ vibhutiagarwal$ sudo mv ./kubectl /usr/local/bin/kubectl
+Password:
+vibhuaga-Mac:~ vibhutiagarwal$ kubectl version --client
+Client Version: version.Info{Major:"1", Minor:"17", GitVersion:"v1.17.3", GitCommit:"06ad960bfd03b39c8310aaf92d1e7c12ce618213", GitTreeState:"clean", BuildDate:"2020-02-11T18:14:22Z", GoVersion:"go1.13.6", Compiler:"gc", Platform:"darwin/amd64"}
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ wget  http://18.214.149.42/admin.conf
+--2020-03-05 05:25:05--  http://18.214.149.42/admin.conf
+Connecting to 18.214.149.42:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5449 (5.3K) [text/plain]
+Saving to: 'admin.conf'
+
+100%[==================================================================================================================================================================>] 5,449       --.-K/s   in 0s      
+
+2020-03-05 05:25:05 (541 MB/s) - 'admin.conf' saved [5449/5449]
+
+[vibhuti@ip-172-31-39-204 ~]$ ls
+admin.conf  day2  pythoncode  vibday3app1  vibhutiwebapp
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get nodes --kubeconfig admin.conf 
+NAME                            STATUS   ROLES    AGE   VERSION
+ip-172-31-33-12.ec2.internal    Ready    <none>   48m   v1.17.3
+ip-172-31-37-220.ec2.internal   Ready    master   51m   v1.17.3
+ip-172-31-41-125.ec2.internal   Ready    <none>   45m   v1.17.3
+ip-172-31-44-114.ec2.internal   Ready    <none>   44m   v1.17.3
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ echo $HOME
+/home/vibhuti
+[vibhuti@ip-172-31-39-204 ~]$ vim $HOME/.bashrc
+[vibhuti@ip-172-31-39-204 ~]$ cat $HOME/.bashrc
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+#for bash completion in kubectl
+source <(kubectl completion bash)
+[vibhuti@ip-172-31-39-204 ~]$ source $HOME/.bashrc
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl 
+annotate       attach         cluster-info   cordon         describe       exec           kustomize      patch          replace        set            version        
+api-resources  auth           completion     cp             diff           explain        label          plugin         rollout        taint          wait           
+api-versions   autoscale      config         create         drain          expose         logs           port-forward   run            top            
+apply          certificate    convert        delete         edit           get            options        proxy          scale          uncordon      
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ mkdir day4pods
+[vibhuti@ip-172-31-39-204 ~]$ cd day4pods/
+[vibhuti@ip-172-31-39-204 day4pods]$ ls
+[vibhuti@ip-172-31-39-204 day4pods]$ vim vibpod1.yml
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod1.yml 
+apiVersion: v1
+kind: Pod
+metadata: 
+ name: vibpod1 #pod name must be unique
+spec: 
+ containers:
+  - name: vibc1 #this can be same
+    image: nginx #docker image
+
+[vibhuti@ip-172-31-39-204 ~]$ cp -v admin.conf $HOME/.kube/config
+'admin.conf' -> '/home/vibhuti/.kube/config'
+[vibhuti@ip-172-31-39-204 ~]$ cd day4pods/
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibpod1.yml 
+pod/vibpod1 created
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get pods
+NAME            READY   STATUS    RESTARTS   AGE
+vibpod1         1/1     Running   0          21s
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get pods vibpod1
+NAME      READY   STATUS    RESTARTS   AGE
+vibpod1   1/1     Running   0          4m35s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get pods vibpod1 -o wide
+NAME      READY   STATUS    RESTARTS   AGE     IP             NODE                           NOMINATED NODE   READINESS GATES
+vibpod1   1/1     Running   0          4m43s   192.168.7.68   ip-172-31-33-12.ec2.internal   <none>           <none>
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl describe pods vibpod1
+Name:         vibpod1
+Namespace:    default
+Priority:     0
+Node:         ip-172-31-33-12.ec2.internal/172.31.33.12
+Start Time:   Thu, 05 Mar 2020 06:04:37 +0000
+Labels:       <none>
+Annotations:  cni.projectcalico.org/podIP: 192.168.7.68/32
+Status:       Running
+IP:           192.168.7.68
+IPs:
+  IP:  192.168.7.68
+Containers:
+  vibc1:
+    Container ID:   docker://c4c8c0872a81a50a69d241ec6fbdf863fc8672859b97e7a5a993d98a9946642f
+    Image:          nginx
+    Image ID:       docker-pullable://nginx@sha256:2539d4344dd18e1df02be842ffc435f8e1f699cfc55516e2cf2cb16b7a9aea0b
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Thu, 05 Mar 2020 06:04:42 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-4dbzn (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  default-token-4dbzn:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-4dbzn
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason     Age   From                                   Message
+  ----    ------     ----  ----                                   -------
+  Normal  Scheduled  10m   default-scheduler                      Successfully assigned default/vibpod1 to ip-172-31-33-12.ec2.internal
+  Normal  Pulling    10m   kubelet, ip-172-31-33-12.ec2.internal  Pulling image "nginx"
+  Normal  Pulled     10m   kubelet, ip-172-31-33-12.ec2.internal  Successfully pulled image "nginx"
+  Normal  Created    10m   kubelet, ip-172-31-33-12.ec2.internal  Created container vibc1
+  Normal  Started    10m   kubelet, ip-172-31-33-12.ec2.internal  Started container vibc1
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ vim vibpod1.yml 
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod1.yml 
+apiVersion: v1
+kind: Pod
+metadata: 
+ name: vibpod1 #pod name must be unique
+ labels:
+  x: vibapp #key value pair unique
+spec: 
+ containers:
+  - name: vibc1 #this can be same
+    image: nginx #docker image
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibpod1.yml 
+Error from server (AlreadyExists): error when creating "vibpod1.yml": pods "vibpod1" already exists
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl apply -f vibpod1.yml 
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+pod/vibpod1 configured
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get po vibpod1 --show-labels
+NAME      READY   STATUS    RESTARTS   AGE   LABELS
+vibpod1   1/1     Running   0          54m   x=vibapp
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl run vibpod2 --image=nginx --restart=Never --dry-run
+pod/vibpod2 created (dry run)
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl run vibpod2 --image=nginx --restart=Never --dry-run -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: vibpod2
+  name: vibpod2
+spec:
+  containers:
+  - image: nginx
+    name: vibpod2
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl run vibpod2 --image=nginx --restart=Never --dry-run -o yaml > vibpod2.yml
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod2.yml 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: vibpod2
+  name: vibpod2
+spec:
+  containers:
+  - image: nginx
+    name: vibpod2
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create service
+Create a service using specified subcommand.
+
+Aliases:
+service, svc
+
+Available Commands:
+  clusterip    Create a ClusterIP service.
+  externalname Create an ExternalName service.
+  loadbalancer Create a LoadBalancer service.
+  nodeport     Create a NodePort service.
+
+Usage:
+  kubectl create service [flags] [options]
+
+Use "kubectl <command> --help" for more information about a given command.
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create service nodeport vibpod1svc --tcp 80 --dry-run -o yaml > vibpod1svc.yml
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod1svc.yml 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: vibpod1svc
+  name: vibpod1svc
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: vibpod1svc
+  type: NodePort
+status:
+  loadBalancer: {}
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get po vibpod1 --show-labels
+NAME      READY   STATUS    RESTARTS   AGE   LABELS
+vibpod1   1/1     Running   0          74m   x=vibapp
+[vibhuti@ip-172-31-39-204 day4pods]$ vim vibpod1svc.yml 
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod1svc.yml 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: vibpod1svc
+  name: vibpod1svc
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    protocol: TCP
+    targetPort: 80 # same as container port that we have given in dockerfile
+  selector:
+   x: vibapp
+  type: NodePort
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibpod1svc.yml 
+service/vibpod1svc created
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get svc
+NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+ajpod1srv     NodePort    10.104.14.134    <none>        80:32644/TCP   47s
+ashupod1svc   NodePort    10.105.225.28    <none>        80:30650/TCP   68s
+gulpod1svc    NodePort    10.105.31.60     <none>        80:31211/TCP   48s
+kubernetes    ClusterIP   10.96.0.1        <none>        443/TCP        170m
+veerpod1svc   NodePort    10.104.101.225   <none>        80:32377/TCP   48s
+vibpod1svc    NodePort    10.100.247.26    <none>        80:30132/TCP   52s
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get svc,po
+NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/ajpod1srv      NodePort    10.104.14.134    <none>        80:32644/TCP   2m4s
+service/ashupod1svc    NodePort    10.105.225.28    <none>        80:30650/TCP   2m25s
+service/gulpod1svc     NodePort    10.105.31.60     <none>        80:31211/TCP   2m5s
+service/kubernetes     ClusterIP   10.96.0.1        <none>        443/TCP        171m
+service/rishipod1svc   NodePort    10.99.148.214    <none>        80:31819/TCP   23s
+service/veerpod1svc    NodePort    10.104.101.225   <none>        80:32377/TCP   2m5s
+service/vibpod1svc     NodePort    10.100.247.26    <none>        80:30132/TCP   2m9s
+
+NAME                READY   STATUS    RESTARTS   AGE
+pod/ajpod1          1/1     Running   0          83m
+pod/ashupod1        1/1     Running   0          41m
+pod/demappapod1     1/1     Running   0          80m
+pod/gulpod1         1/1     Running   0          83m
+pod/guripod1        1/1     Running   0          83m
+pod/ksreeharupod1   1/1     Running   0          83m
+pod/leopod1         1/1     Running   0          83m
+pod/leopod3         1/1     Running   0          18m
+pod/namitpod1       1/1     Running   0          81m
+pod/pravinpod1      1/1     Running   0          71m
+pod/ram-k8s-p1      1/1     Running   0          79m
+pod/rishipod1       1/1     Running   0          82m
+pod/veerpod1        1/1     Running   0          81m
+pod/vibpod1         1/1     Running   0          81m
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ vim vibpod1.yml 
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibpod1.yml 
+apiVersion: v1
+kind: Pod
+metadata: 
+ name: vibpod1 #pod name must be unique
+ labels:
+  x: vibapp #key value pair unique
+spec: 
+ containers:
+  - name: vibc1 #this can be same
+    image: nginx #docker image
+    ports:
+     - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: vibpod1svc
+spec:
+ ports:
+  - name: myport
+    port: 80
+    protocol: TCP
+    targetPort: 80
+ selector:
+  x: vibapp
+ type: NodePort
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibpod1.yml 
+pod/vibpod1 created
+service/vibpod1svc created
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get po
+NAME           READY   STATUS    RESTARTS   AGE
+ajpod1         1/1     Running   0          3m28s
+ashupod1       1/1     Running   0          3m53s
+gulpod1        1/1     Running   0          35s
+ksreeharpod1   1/1     Running   0          110s
+leopod1        1/1     Running   0          12m
+rishipod1      1/1     Running   0          3m37s
+veerpod1       1/1     Running   0          3m26s
+vibpod1        1/1     Running   0          15s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get svc
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+ajpod1srv         NodePort    10.97.223.237    <none>        80:31246/TCP   3m33s
+ashupod1svc       NodePort    10.105.143.120   <none>        80:30918/TCP   3m58s
+gulpod1svc        NodePort    10.105.160.45    <none>        80:32104/TCP   40s
+ksreeharpod1svc   NodePort    10.104.254.59    <none>        80:31722/TCP   115s
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        14m
+leosrvpod         NodePort    10.104.251.66    <none>        80:30791/TCP   11m
+namitpod1svc      ClusterIP   10.106.210.163   <none>        80/TCP         14m
+rishipod1svc      NodePort    10.102.191.225   <none>        80:31027/TCP   3m42s
+veerpod1svc       NodePort    10.100.64.199    <none>        80:32751/TCP   3m31s
+vibpod1svc        NodePort    10.101.123.148   <none>        80:30050/TCP   20s
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl create namespace vibhuti
+namespace/vibhuti created
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get ns
+NAME              STATUS   AGE
+ajns              Active   6s
+ashutoshh         Active   40s
+default           Active   5h17m
+gulns             Active   13s
+gurvinder         Active   16s
+ksreehar          Active   5s
+kube-node-lease   Active   5h17m
+kube-public       Active   5h17m
+kube-system       Active   5h17m
+namit             Active   23s
+pravin            Active   9s
+ram               Active   1s
+rishi             Active   4s
+vibhuti           Active   10s
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get pods -n vibhuti
+No resources found in vibhuti namespace.
+
+[vibhuti@ip-172-31-39-204 ~]$ cd day4pods/
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibpod1.yml -n vibhuti
+pod/vibpod1 created
+service/vibpod1svc created
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get pods -n vibhuti
+NAME      READY   STATUS    RESTARTS   AGE
+vibpod1   1/1     Running   0          4s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get svc -n vibhuti
+NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+vibpod1svc   NodePort   10.97.170.12   <none>        80:31892/TCP   21s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get pods
+No resources found in default namespace.
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get svc
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes     ClusterIP   10.96.0.1        <none>        443/TCP        12m
+ram-x8s-svc1   NodePort    10.107.126.131   <none>        80:32751/TCP   12s
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get all -n vibhuti
+NAME          READY   STATUS    RESTARTS   AGE
+pod/vibpod1   1/1     Running   0          2m7s
+
+NAME                 TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/vibpod1svc   NodePort   10.97.170.12   <none>        80:31892/TCP   2m7s
+
+
+---------------------------------------------------------------------------------------------------------
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl delete all --all -n vibhuti
+pod "vibpod1" deleted
+service "vibpod1svc" deleted
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create deployment vibdep1 --image=vibhuti57/vibhutiwebapp:v1 --dry-run -n vibhuti -o yaml > vibdep1.yml
+[vibhuti@ip-172-31-39-204 day4pods]$ ls
+vibdep1.yml  vibpod1.yml  vibpod1svc.yml  vibpod2.yml
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibdep1.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: vibdep1
+  name: vibdep1
+  namespace: vibhuti
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vibdep1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vibdep1
+    spec:
+      containers:
+      - image: vibhuti57/vibhutiwebapp:v1
+        name: vibhutiwebapp
+        resources: {}
+status: {}
+
+---------------------------------------------------------------------------------------------------------
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl create -f vibdep1.yml -n vibhuti
+deployment.apps/vibdep1 created
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deployments
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+ksreehardeploy1    1/1     1            1           3m51s
+namitdeployment1   0/1     1            0           4m20s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deployments -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/1     1            1           15s
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/1     1            1           27m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get po -n vibhuti
+NAME                       READY   STATUS    RESTARTS   AGE
+vibdep1-588c5c7697-hfpl5   1/1     Running   0          27m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get replicasets -n vibhuti
+NAME                 DESIRED   CURRENT   READY   AGE
+vibdep1-588c5c7697   1         1         1       28m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl delete po vibdep1-588c5c7697-hfpl5 -n vibhuti
+pod "vibdep1-588c5c7697-hfpl5" deleted
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get po -n vibhuti
+NAME                       READY   STATUS    RESTARTS   AGE
+vibdep1-588c5c7697-67b2c   1/1     Running   0          47s
+---------------------------------------------------------------------------------------------------------
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get deploy -n vibhuti --show-labels
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+vibdep1   1/1     1            1           32m   app=vibdep1
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get po -n vibhuti --show-labels
+NAME                       READY   STATUS    RESTARTS   AGE     LABELS
+vibdep1-588c5c7697-67b2c   1/1     Running   0          3m14s   app=vibdep1,pod-template-hash=588c5c7697
+
+kubectl expose deployment vibdep1 --type NodePort --port 80 -n vibhuti
+service/vibdep1 exposed
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get svc -n vibhuti
+NAME      TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+vibdep1   NodePort   10.102.214.7   <none>        80:31452/TCP   18s
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day4pods]$ vi vibdep1.yml 
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibdep1.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: vibdep1
+  name: vibdep1
+  namespace: vibhuti
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vibdep1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vibdep1
+    spec:
+      containers:
+      - image: vibhuti57/vibhutiwebapp:v1
+        name: vibhutiwebapp
+        resources: {}
+status: {}
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deployments -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/1     1            1           43m
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl apply -f vibdep1.yml -n vibhuti 
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+deployment.apps/vibdep1 configured
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deployments -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/2     2            1           43m
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get po -n vibhuti
+NAME                       READY   STATUS    RESTARTS   AGE
+vibdep1-588c5c7697-67b2c   1/1     Running   0          14m
+vibdep1-588c5c7697-htr5p   1/1     Running   0          20s
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deployments -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   2/2     2            2           43m
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl edit deploy vibdep1 -n vibhuti
+deployment.apps/vibdep1 edited
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   4/4     4            4           46m
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get po -n vibhuti
+NAME                       READY   STATUS    RESTARTS   AGE
+vibdep1-588c5c7697-67b2c   1/1     Running   0          16m
+vibdep1-588c5c7697-8bn5w   1/1     Running   0          24s
+vibdep1-588c5c7697-htr5p   1/1     Running   0          3m6s
+vibdep1-588c5c7697-v4m4t   1/1     Running   0          24s
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   4/4     4            4           55m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get rs -n vibhuti
+NAME                 DESIRED   CURRENT   READY   AGE
+vibdep1-588c5c7697   4         4         4       55m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get pods -n vibhuti
+NAME                       READY   STATUS    RESTARTS   AGE
+vibdep1-588c5c7697-67b2c   1/1     Running   0          26m
+vibdep1-588c5c7697-8bn5w   1/1     Running   0          9m56s
+vibdep1-588c5c7697-htr5p   1/1     Running   0          12m
+vibdep1-588c5c7697-v4m4t   1/1     Running   0          9m56s
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get svc -n vibhuti
+NAME      TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+vibdep1   NodePort   10.102.214.7   <none>        80:31452/TCP   21m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get all -n vibhuti
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/vibdep1-588c5c7697-67b2c   1/1     Running   0          26m
+pod/vibdep1-588c5c7697-8bn5w   1/1     Running   0          10m
+pod/vibdep1-588c5c7697-htr5p   1/1     Running   0          12m
+pod/vibdep1-588c5c7697-v4m4t   1/1     Running   0          10m
+
+NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/vibdep1   NodePort   10.102.214.7   <none>        80:31452/TCP   21m
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/vibdep1   4/4     4            4           56m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/vibdep1-588c5c7697   4         4         4       56m
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl scale deployment vibdep1 --replicas=2 -n vibhuti
+deployment.apps/vibdep1 scaled
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get all -n vibhuti
+NAME                           READY   STATUS        RESTARTS   AGE
+pod/vibdep1-588c5c7697-67b2c   1/1     Running       0          28m
+pod/vibdep1-588c5c7697-8bn5w   1/1     Running       0          11m
+pod/vibdep1-588c5c7697-htr5p   1/1     Terminating   0          14m
+pod/vibdep1-588c5c7697-v4m4t   1/1     Terminating   0          11m
+
+NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/vibdep1   NodePort   10.102.214.7   <none>        80:31452/TCP   22m
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/vibdep1   2/2     2            2           57m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/vibdep1-588c5c7697   2         2         2       57m
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ cd day4pods/
+[vibhuti@ip-172-31-39-204 day4pods]$ git clone https://github.com/Vibhuti57/oraclewebappmarch2020.git
+Cloning into 'oraclewebappmarch2020'...
+remote: Enumerating objects: 23, done.
+remote: Counting objects: 100% (23/23), done.
+remote: Compressing objects: 100% (17/17), done.
+remote: Total 23 (delta 4), reused 10 (delta 2), pack-reused 0
+Unpacking objects: 100% (23/23), done.
+[vibhuti@ip-172-31-39-204 day4pods]$ cd oraclewebappmarch2020/
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ ls
+Dockerfile  README.md  Training  entrypt.sh  green.html  red.html  vibhuti.html
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ wget https://devopedia.org/images/article/101/8323.1565281088.png
+--2020-03-05 11:26:47--  https://devopedia.org/images/article/101/8323.1565281088.png
+Resolving devopedia.org (devopedia.org)... 195.42.142.115
+Connecting to devopedia.org (devopedia.org)|195.42.142.115|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 53522 (52K) [image/png]
+Saving to: '8323.1565281088.png'
+
+100%[==================================================================================================================================================================>] 53,522       269KB/s   in 0.2s   
+
+2020-03-05 11:26:48 (269 KB/s) - '8323.1565281088.png' saved [53522/53522]
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ mv 8323.1565281088.png docker.png
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ ls
+Dockerfile  README.md  Training  docker.png  entrypt.sh  green.html  red.html  vibhuti.html
+
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ cd ..
+[vibhuti@ip-172-31-39-204 day4pods]$ cat vibdep1.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: vibdep1
+  name: vibdep1
+  namespace: vibhuti
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vibdep1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vibdep1
+    spec:
+      containers:
+      - image: vibhuti57/vibhutiwebapp:v1
+        name: vibhutiwebapp
+        resources: {}
+status: {}
+[vibhuti@ip-172-31-39-204 day4pods]$ cd oraclewebappmarch2020/
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker build -t vibhuti57/vibhutiwebapp:v2 .
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker login -u vibhuti57
+Password: 
+WARNING! Your password will be stored unencrypted in /home/vibhuti/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker push vibhuti57/vibhutiwebapp:v2
+The push refers to repository [docker.io/vibhuti57/vibhutiwebapp]
+21f1aea9b927: Pushed 
+1b3a2c550cbe: Pushed 
+1934db628f4c: Layer already exists 
+v2: digest: sha256:474f4608a990353344eac671d0f7d4f3d5989da2b00ed6887e5952dbc85f14a5 size: 951
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker logout
+Removing login credentials for https://index.docker.io/v1/
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   2/2     2            2           81m
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl describe deploy vibdep1 -n vibhuti
+Name:                   vibdep1
+Namespace:              vibhuti
+CreationTimestamp:      Thu, 05 Mar 2020 10:18:35 +0000
+Labels:                 app=vibdep1
+Annotations:            deployment.kubernetes.io/revision: 1
+                        kubectl.kubernetes.io/last-applied-configuration:
+                          {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"creationTimestamp":null,"labels":{"app":"vibdep1"},"name":"vibde..."
+Selector:               app=vibdep1
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=vibdep1
+  Containers:
+   vibhutiwebapp:
+    Image:        vibhuti57/vibhutiwebapp:v1
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   vibdep1-588c5c7697 (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  38m   deployment-controller  Scaled up replica set vibdep1-588c5c7697 to 2
+  Normal  ScalingReplicaSet  35m   deployment-controller  Scaled up replica set vibdep1-588c5c7697 to 4
+  Normal  ScalingReplicaSet  23m   deployment-controller  Scaled down replica set vibdep1-588c5c7697 to 2
+
+
+[vibhuti@ip-172-31-39-204 day4pods]$ kubectl edit deploy vibdep1 -n vibhuti
+deployment.apps/vibdep1 edited
+# edit docker image version
+
+---------------------------------------------------------------------------------------------------------
+
