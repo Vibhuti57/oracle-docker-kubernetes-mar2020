@@ -1,0 +1,605 @@
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get nodes
+NAME                            STATUS   ROLES    AGE   VERSION
+ip-172-31-33-12.ec2.internal    Ready    <none>   24h   v1.17.3
+ip-172-31-37-220.ec2.internal   Ready    master   24h   v1.17.3
+ip-172-31-41-125.ec2.internal   Ready    <none>   24h   v1.17.3
+ip-172-31-44-114.ec2.internal   Ready    <none>   24h   v1.17.3
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get ns
+NAME              STATUS   AGE
+ajns              Active   18h
+ashutoshh         Active   18h
+default           Active   24h
+gulns             Active   18h
+gurvinder         Active   18h
+ksreehar          Active   18h
+kube-node-lease   Active   24h
+kube-public       Active   24h
+kube-system       Active   24h
+leonamespace      Active   18h
+namit             Active   18h
+pravin            Active   18h
+ram               Active   18h
+rishi             Active   18h
+veer              Active   18h
+vibhuti           Active   18h
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get all -n vibhuti
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/vibdep1-5847bf9cf9-gk25w   1/1     Running   1          16h
+pod/vibdep1-5847bf9cf9-plmbf   1/1     Running   1          16h
+
+NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/vibdep1   NodePort   10.102.214.7   <none>        80:31452/TCP   17h
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/vibdep1   2/2     2            2           18h
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/vibdep1-5847bf9cf9   2         2         2       16h
+replicaset.apps/vibdep1-588c5c7697   0         0         0       18h
+replicaset.apps/vibdep1-84c55687d4   0         0         0       17h
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get all -n kube-system
+NAME                                                        READY   STATUS    RESTARTS   AGE
+pod/calico-kube-controllers-5c45f5bd9f-dq25w                1/1     Running   1          24h
+pod/calico-node-88lx2                                       1/1     Running   1          24h
+pod/calico-node-b5n6q                                       1/1     Running   1          24h
+pod/calico-node-lrgdp                                       1/1     Running   1          24h
+pod/calico-node-v7cf7                                       1/1     Running   1          24h
+pod/coredns-6955765f44-bblwr                                1/1     Running   1          24h
+pod/coredns-6955765f44-p24js                                1/1     Running   1          24h
+pod/etcd-ip-172-31-37-220.ec2.internal                      1/1     Running   1          24h
+pod/kube-apiserver-ip-172-31-37-220.ec2.internal            1/1     Running   1          24h
+pod/kube-controller-manager-ip-172-31-37-220.ec2.internal   1/1     Running   1          24h
+pod/kube-proxy-4dn6n                                        1/1     Running   1          24h
+pod/kube-proxy-bssxz                                        1/1     Running   1          24h
+pod/kube-proxy-kxxzc                                        1/1     Running   1          24h
+pod/kube-proxy-pcxj8                                        1/1     Running   1          24h
+pod/kube-scheduler-ip-172-31-37-220.ec2.internal            1/1     Running   1          24h
+
+NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+service/kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   24h
+
+NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                 AGE
+daemonset.apps/calico-node   4         4         4       4            4           beta.kubernetes.io/os=linux   24h
+daemonset.apps/kube-proxy    4         4         4       4            4           beta.kubernetes.io/os=linux   24h
+
+NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/calico-kube-controllers   1/1     1            1           24h
+deployment.apps/coredns                   2/2     2            2           24h
+
+NAME                                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/calico-kube-controllers-5c45f5bd9f   1         1         1       24h
+replicaset.apps/coredns-6955765f44                   2         2         2       24h
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl config view
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://172.31.37.220:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: REDACTED
+    client-key-data: REDACTED
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get serviceaccounts
+NAME      SECRETS   AGE
+default   1         24h
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get serviceaccounts -n vibhuti
+NAME      SECRETS   AGE
+default   1         19h
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get sa -n ok
+NAME      SECRETS   AGE
+default   1         15s
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl api-resources 
+NAME                              SHORTNAMES   APIGROUP                       NAMESPACED   KIND
+bindings                                                                      true         Binding
+componentstatuses                 cs                                          false        ComponentStatus
+configmaps                        cm                                          true         ConfigMap
+endpoints                         ep                                          true         Endpoints
+events                            ev                                          true         Event
+limitranges                       limits                                      true         LimitRange
+namespaces                        ns                                          false        Namespace
+nodes                             no                                          false        Node
+persistentvolumeclaims            pvc                                         true         PersistentVolumeClaim
+persistentvolumes                 pv                                          false        PersistentVolume
+pods                              po                                          true         Pod
+podtemplates                                                                  true         PodTemplate
+replicationcontrollers            rc                                          true         ReplicationController
+resourcequotas                    quota                                       true         ResourceQuota
+secrets                                                                       true         Secret
+serviceaccounts                   sa                                          true         ServiceAccount
+services                          svc                                         true         Service
+mutatingwebhookconfigurations                  admissionregistration.k8s.io   false        MutatingWebhookConfiguration
+validatingwebhookconfigurations                admissionregistration.k8s.io   false        ValidatingWebhookConfiguration
+customresourcedefinitions         crd,crds     apiextensions.k8s.io           false        CustomResourceDefinition
+apiservices                                    apiregistration.k8s.io         false        APIService
+controllerrevisions                            apps                           true         ControllerRevision
+daemonsets                        ds           apps                           true         DaemonSet
+deployments                       deploy       apps                           true         Deployment
+replicasets                       rs           apps                           true         ReplicaSet
+statefulsets                      sts          apps                           true         StatefulSet
+tokenreviews                                   authentication.k8s.io          false        TokenReview
+localsubjectaccessreviews                      authorization.k8s.io           true         LocalSubjectAccessReview
+selfsubjectaccessreviews                       authorization.k8s.io           false        SelfSubjectAccessReview
+selfsubjectrulesreviews                        authorization.k8s.io           false        SelfSubjectRulesReview
+subjectaccessreviews                           authorization.k8s.io           false        SubjectAccessReview
+horizontalpodautoscalers          hpa          autoscaling                    true         HorizontalPodAutoscaler
+cronjobs                          cj           batch                          true         CronJob
+jobs                                           batch                          true         Job
+certificatesigningrequests        csr          certificates.k8s.io            false        CertificateSigningRequest
+leases                                         coordination.k8s.io            true         Lease
+bgpconfigurations                              crd.projectcalico.org          false        BGPConfiguration
+bgppeers                                       crd.projectcalico.org          false        BGPPeer
+blockaffinities                                crd.projectcalico.org          false        BlockAffinity
+clusterinformations                            crd.projectcalico.org          false        ClusterInformation
+felixconfigurations                            crd.projectcalico.org          false        FelixConfiguration
+globalnetworkpolicies                          crd.projectcalico.org          false        GlobalNetworkPolicy
+globalnetworksets                              crd.projectcalico.org          false        GlobalNetworkSet
+hostendpoints                                  crd.projectcalico.org          false        HostEndpoint
+ipamblocks                                     crd.projectcalico.org          false        IPAMBlock
+ipamconfigs                                    crd.projectcalico.org          false        IPAMConfig
+ipamhandles                                    crd.projectcalico.org          false        IPAMHandle
+ippools                                        crd.projectcalico.org          false        IPPool
+networkpolicies                                crd.projectcalico.org          true         NetworkPolicy
+networksets                                    crd.projectcalico.org          true         NetworkSet
+endpointslices                                 discovery.k8s.io               true         EndpointSlice
+events                            ev           events.k8s.io                  true         Event
+ingresses                         ing          extensions                     true         Ingress
+ingresses                         ing          networking.k8s.io              true         Ingress
+networkpolicies                   netpol       networking.k8s.io              true         NetworkPolicy
+runtimeclasses                                 node.k8s.io                    false        RuntimeClass
+poddisruptionbudgets              pdb          policy                         true         PodDisruptionBudget
+podsecuritypolicies               psp          policy                         false        PodSecurityPolicy
+clusterrolebindings                            rbac.authorization.k8s.io      false        ClusterRoleBinding
+clusterroles                                   rbac.authorization.k8s.io      false        ClusterRole
+rolebindings                                   rbac.authorization.k8s.io      true         RoleBinding
+roles                                          rbac.authorization.k8s.io      true         Role
+priorityclasses                   pc           scheduling.k8s.io              false        PriorityClass
+csidrivers                                     storage.k8s.io                 false        CSIDriver
+csinodes                                       storage.k8s.io                 false        CSINode
+storageclasses                    sc           storage.k8s.io                 false        StorageClass
+volumeattachments                              storage.k8s.io                 false        VolumeAttachment
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get secrets
+NAME                  TYPE                                  DATA   AGE
+default-token-4dbzn   kubernetes.io/service-account-token   3      24h
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get secrets -n vibhuti
+NAME                  TYPE                                  DATA   AGE
+default-token-xnsrb   kubernetes.io/service-account-token   3      19h
+[vibhuti@ip-172-31-39-204 ~]$ kubectl describe secrets default-token-xnsrb -n vibhuti
+Name:         default-token-xnsrb
+Namespace:    vibhuti
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: default
+              kubernetes.io/service-account.uid: 2aad9d88-ec1d-4fa1-bd30-eb66a894f972
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  7 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Ijh6d3ZSdU0tN0UwMEJNRWdsVV85eUIxbW02ODh4bkdHNFdNU19OUlR5ZGsifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJ2aWJodXRpIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtdG9rZW4teG5zcmIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVmYXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjJhYWQ5ZDg4LWVjMWQtNGZhMS1iZDMwLWViNjZhODk0Zjk3MiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDp2aWJodXRpOmRlZmF1bHQifQ.t6IGDiTk3gs0Zh9jjb3w21NQ1uC-CRXABJQVlzXKUb0caEZBMeIAiyZUYBwEZeQQ4mS-aP34OrP7RMdv6oPuupzkl_OFL-MoKlt2knJ8gwW5fKwv6F0LvYQwxJ1LneO4DtfZaX1q-LgFqgxlHwFCLBoHqGh3xzVHx0tQtqboMjyRdt2NNvUNAbUa8iODvZoNfoUchTRSd6W3jep7YPZIVuzW6j4YE5EcLNSoJhaGhOYWCeEykPcTwLs8UZd8Mpj6QhcVaKLM0iN9LCVwBvAlUo7hPb6z78XijGU4UrcP5DrUxhH7Z57j46GiS2yObNOceweD7MDXRLFnMuK1IvaXww
+
+---------------------------------------------------------------------------------------------------------
+https://github.com/kubernetes/dashboard
+wget  https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+vim  recommended.yaml
+kubectl create -f recommended.yaml
+
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get po -n kubernetes-dashboard 
+NAME                                         READY   STATUS    RESTARTS   AGE
+dashboard-metrics-scraper-76585494d8-f9xhj   1/1     Running   0          2m24s
+kubernetes-dashboard-5996555fd8-zn2bs        1/1     Running   0          2m24s
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get sa -n kubernetes-dashboard 
+NAME                   SECRETS   AGE
+default                1         2m32s
+kubernetes-dashboard   1         2m32s
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get secrets -n kubernetes-dashboard 
+NAME                               TYPE                                  DATA   AGE
+default-token-k5qcg                kubernetes.io/service-account-token   3      2m53s
+kubernetes-dashboard-certs         Opaque                                0      2m53s
+kubernetes-dashboard-csrf          Opaque                                1      2m53s
+kubernetes-dashboard-key-holder    Opaque                                2      2m53s
+kubernetes-dashboard-token-rzdq6   kubernetes.io/service-account-token   3      2m53s
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get svc -n kubernetes-dashboard 
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+dashboard-metrics-scraper   ClusterIP   10.102.178.112   <none>        8000/TCP   3m21s
+kubernetes-dashboard        ClusterIP   10.98.70.154     <none>        443/TCP    3m21s
+
+-- change service type to NodePort to access from outside -- 
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get svc -n kubernetes-dashboard 
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP   10.102.178.112   <none>        8000/TCP        4m17s
+kubernetes-dashboard        NodePort    10.98.70.154     <none>        443:32148/TCP   4m17s
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get secrets -n kubernetes-dashboard 
+NAME                               TYPE                                  DATA   AGE
+default-token-k5qcg                kubernetes.io/service-account-token   3      7m18s
+kubernetes-dashboard-certs         Opaque                                0      7m18s
+kubernetes-dashboard-csrf          Opaque                                1      7m18s
+kubernetes-dashboard-key-holder    Opaque                                2      7m18s
+kubernetes-dashboard-token-rzdq6   kubernetes.io/service-account-token   3      7m18s
+[vibhuti@ip-172-31-39-204 ~]$ kubectl describe secrets kubernetes-dashboard-token-rzdq6 -n kubernetes-dashboard 
+Name:         kubernetes-dashboard-token-rzdq6
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: kubernetes-dashboard
+              kubernetes.io/service-account.uid: c1bd0ad8-8fed-4952-8d95-ab1766ad66be
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Ijh6d3ZSdU0tN0UwMEJNRWdsVV85eUIxbW02ODh4bkdHNFdNU19OUlR5ZGsifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZC10b2tlbi1yemRxNiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImMxYmQwYWQ4LThmZWQtNDk1Mi04ZDk1LWFiMTc2NmFkNjZiZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDprdWJlcm5ldGVzLWRhc2hib2FyZCJ9.U0Hnr6Rm8JpEiwDBSncpBn4U-LOhwdW39e-Gi1MdKeZo3r6TT1aKjPuCnneZlbYHozANhx_My3PjzM5TzFB8wThKm5IvtPRgrfjiyjh4LMig3xtiQOfzE-Ox23hpZk0Pdx9Qu-cL8rfcu5_fUDcmQJbXhEyb0uAw45UjHscy3GoVyrJdySii3Wn6IEVMqakO88zjNjW9Pu665Nhfw4kecW1qKtAtAYM4VVCrT-ZLHHi2P98T-QALnvNf8Y9mL91VKGFQuG3bDDyb8_p9yGFkbEhu6PN4qCMAjpeUCIcuIrzgunxWYPg6Nk2rSVt7jUQ-8A-PqhrF2DyyefHTPk3GVg
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get sa -n kubernetes-dashboard 
+NAME                   SECRETS   AGE
+default                1         13m
+kubernetes-dashboard   1         13m
+[vibhuti@ip-172-31-39-204 ~]$ vim access.yml
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl create -f access.yml -n kubernetes-dashboard
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl delete all --all -n vibhuti
+pod "vibapp5-84d8f48776-248jp" deleted
+pod "vibapp5-84d8f48776-bktl4" deleted
+pod "vibdep1-5847bf9cf9-gk25w" deleted
+pod "vibdep1-5847bf9cf9-plmbf" deleted
+service "vibapp5" deleted
+service "vibdep1" deleted
+deployment.apps "vibapp5" deleted
+deployment.apps "vibdep1" deleted
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get all -n vibhuti
+No resources found in vibhuti namespace.
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ mkdir day5app
+[vibhuti@ip-172-31-39-204 ~]$ cd day5app/
+[vibhuti@ip-172-31-39-204 day5app]$ ls
+[vibhuti@ip-172-31-39-204 day5app]$ git clone https://github.com/Vibhuti57/oraclewebappmarch2020.git
+Cloning into 'oraclewebappmarch2020'...
+remote: Enumerating objects: 45, done.
+remote: Counting objects: 100% (45/45), done.
+remote: Compressing objects: 100% (37/37), done.
+remote: Total 45 (delta 16), reused 15 (delta 4), pack-reused 0
+Unpacking objects: 100% (45/45), done.
+[vibhuti@ip-172-31-39-204 day5app]$ ls
+oraclewebappmarch2020
+[vibhuti@ip-172-31-39-204 day5app]$ cd oraclewebappmarch2020/
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ ls
+Dockerfile  README.md  Training  docker.png  entrypt.sh  green.html  red.html  vibhuti.html
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ vim vibhuti.html 
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ cat vibhuti.html 
+<html>
+	<body>
+		<h1> This is the default page for docker container. </h1>
+                <h2> This is Version One of the application. </h2>
+		<img src="docker.png">
+	</body>
+</html>
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker build -t vibhuti57/dockerTraining:v1 .
+invalid argument "vibhuti57/dockerTraining:v1" for "-t, --tag" flag: invalid reference format: repository name must be lowercase
+See 'docker build --help'.
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker build -t vibhuti57/dockertraining:v1 .
+Sending build context to Docker daemon  154.1kB
+Step 1/10 : FROM fedora
+ ---> 536f3995adeb
+Step 2/10 : MAINTAINER vibhuti
+ ---> Using cache
+ ---> 3d46cb5007c5
+Step 3/10 : ARG web=httpd
+ ---> Using cache
+ ---> 1def3bafecff
+Step 4/10 : ENV server=$web
+ ---> Using cache
+ ---> 6ba2a6dadadf
+Step 5/10 : ENV color=black
+ ---> Using cache
+ ---> bbf32fed83bf
+Step 6/10 : RUN yum install $server -y
+ ---> Using cache
+ ---> a61a6eb21053
+Step 7/10 : WORKDIR /opt/
+ ---> Using cache
+ ---> 1e92b68baa41
+Step 8/10 : COPY . .
+ ---> 964aaea21784
+Step 9/10 : EXPOSE 80
+ ---> Running in 5bd5dd0ab83c
+Removing intermediate container 5bd5dd0ab83c
+ ---> 13fd8b15412d
+Step 10/10 : ENTRYPOINT ["/bin/bash","/opt/entrypt.sh"]
+ ---> Running in 88f154be464c
+Removing intermediate container 88f154be464c
+ ---> 552ce83e573a
+Successfully built 552ce83e573a
+Successfully tagged vibhuti57/dockertraining:v1
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker login -u vibhuti57
+Password: 
+WARNING! Your password will be stored unencrypted in /home/vibhuti/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker push vibhuti57/dockertraining:v1 
+The push refers to repository [docker.io/vibhuti57/dockertraining]
+1ed0a0dec650: Pushed 
+1b3a2c550cbe: Mounted from vibhuti57/vibhutiwebapp 
+1934db628f4c: Mounted from vibhuti57/vibhutiwebapp 
+v1: digest: sha256:5bbc1548b9f6ec418f5eef7dfadbcdd8bf3c5c9f5ce19e40b9b5aee171bd6438 size: 951
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker logout
+Removing login credentials for https://index.docker.io/v1/
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl create deployment vibdep1 --image=vibhuti57/dockertraining:v1 -n vibhuti
+deployment.apps/vibdep1 created
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/1     1            1           12s
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl expose deployment vibdep1 --type=NodePort --port 80 -n vibhuti
+service/vibdep1 exposed
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get svc -n vibhuti
+NAME      TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+vibdep1   NodePort   10.105.53.75   <none>        80:30680/TCP   11s
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day5app]$ cd oraclewebappmarch2020/
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get deploy vibdep1 --export -o yaml -n vibhuti > vibdep1.yml
+Flag --export has been deprecated, This flag is deprecated and will be removed in future.
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get deploy vibdep1 --export -o json -n vibhuti > vibdep1.json
+Flag --export has been deprecated, This flag is deprecated and will be removed in future.
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ ls
+Dockerfile  README.md  Training  docker.png  entrypt.sh  green.html  red.html  vibdep1.json  vibdep1.yml  vibhuti.html
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ vim vibdep1.yml 
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ cat vibdep1.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: vibdep1
+  name: vibdep1
+  selfLink: /apis/apps/v1/namespaces/vibhuti/deployments/vibdep1
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: vibdep1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: vibdep1
+    spec:
+      containers:
+      - image: vibhuti57/dockertraining:v1
+        imagePullPolicy: Always
+        name: dockertraining
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl apply -f vibdep1.yml -n vibhuti
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+deployment.apps/vibdep1 configured
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ vim vibhuti.html 
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ history | grep -i image=vibhuti57
+  497  kubectl create deployment vibdep1 --image=vibhuti57/vibhutiwebapp:v1 --dry-run -n vibhuti -o yaml > vibdep1.yml
+  658  kubectl create deployment viboracledep1 --image=vibhuti57
+  662  kubectl create deployment vibdep1 --image=vibhuti57/dockertraining:v1 -n vibhuti
+  687  history | grep -i image=vibhuti57
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker build -t vibhuti57/dockertraining:v1 .
+Sending build context to Docker daemon  158.2kB
+Step 1/10 : FROM fedora
+ ---> 536f3995adeb
+Step 2/10 : MAINTAINER vibhuti
+ ---> Using cache
+ ---> 3d46cb5007c5
+Step 3/10 : ARG web=httpd
+ ---> Using cache
+ ---> 1def3bafecff
+Step 4/10 : ENV server=$web
+ ---> Using cache
+ ---> 6ba2a6dadadf
+Step 5/10 : ENV color=black
+ ---> Using cache
+ ---> bbf32fed83bf
+Step 6/10 : RUN yum install $server -y
+ ---> Using cache
+ ---> a61a6eb21053
+Step 7/10 : WORKDIR /opt/
+ ---> Using cache
+ ---> 1e92b68baa41
+Step 8/10 : COPY . .
+ ---> 3fca1cbb846f
+Step 9/10 : EXPOSE 80
+ ---> Running in f2c68058176a
+Removing intermediate container f2c68058176a
+ ---> 7f6851c78557
+Step 10/10 : ENTRYPOINT ["/bin/bash","/opt/entrypt.sh"]
+ ---> Running in 4c0e242d7d0a
+Removing intermediate container 4c0e242d7d0a
+ ---> 463ae55d6bc4
+Successfully built 463ae55d6bc4
+Successfully tagged vibhuti57/dockertraining:v1
+
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker login -u vibhuti57
+Password: 
+WARNING! Your password will be stored unencrypted in /home/vibhuti/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker push vibhuti57/dockertraining:v1
+The push refers to repository [docker.io/vibhuti57/dockertraining]
+389aaed88952: Pushed 
+1b3a2c550cbe: Layer already exists 
+1934db628f4c: Layer already exists 
+v1: digest: sha256:5d6154246f42be01cabb979c1a9389b999e1c72375ab8d0b2db0944fdce094ac size: 951
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ docker logout
+Removing login credentials for https://index.docker.io/v1/
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl rollout restart deployment vibdep1 -n vibhuti
+deployment.apps/vibdep1 restarted
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl rollout status deployment vibdep1 -n vibhuti
+deployment "vibdep1" successfully rolled out
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get po -n vibhuti
+NAME                       READY   STATUS        RESTARTS   AGE
+vibdep1-5759548947-hd92q   1/1     Running       0          6s
+vibdep1-67f466b6b6-dvcp4   1/1     Terminating   0          92s
+[vibhuti@ip-172-31-39-204 oraclewebappmarch2020]$ kubectl get svc -n vibhuti
+NAME      TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+vibdep1   NodePort   10.105.53.75   <none>        80:30680/TCP   42m
+---------------------------------------------------------------------------------------------------------
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl get deploy -n vibhuti
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+vibdep1   1/1     1            1           125m
+[vibhuti@ip-172-31-39-204 ~]$ kubectl rollout history deployment vibdep1 -n vibhuti
+deployment.apps/vibdep1 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+4         <none>
+
+[vibhuti@ip-172-31-39-204 ~]$ kubectl describe deployment vibdep1 -n vibhuti
+Name:                   vibdep1
+Namespace:              vibhuti
+CreationTimestamp:      Fri, 06 Mar 2020 06:42:27 +0000
+Labels:                 app=vibdep1
+Annotations:            deployment.kubernetes.io/revision: 4
+                        kubectl.kubernetes.io/last-applied-configuration:
+                          {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"1"},"creationTimestamp":null,"..."
+Selector:               app=vibdep1
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:       app=vibdep1
+  Annotations:  kubectl.kubernetes.io/restartedAt: 2020-03-06T07:25:37Z
+  Containers:
+   dockertraining:
+    Image:        vibhuti57/dockertraining:v1
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   vibdep1-5759548947 (1/1 replicas created)
+Events:          <none>
+
+---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 ~]$ kubectl rollout undo deployment vibdep1 -n vibhuti --to-revision=2
+error: unable to find specified revision 2 in history
+[vibhuti@ip-172-31-39-204 ~]$ kubectl rollout undo deployment vibdep1 -n vibhuti --to-revision=3
+deployment.apps/vibdep1 rolled back
+[vibhuti@ip-172-31-39-204 ~]$ kubectl rollout status deployment vibdep1 -n vibhuti
+deployment "vibdep1" successfully rolled out
+[vibhuti@ip-172-31-39-204 ~]$ kubectl describe deployment vibdep1 -n vibhuti
+Name:                   vibdep1
+Namespace:              vibhuti
+CreationTimestamp:      Fri, 06 Mar 2020 06:42:27 +0000
+Labels:                 app=vibdep1
+Annotations:            deployment.kubernetes.io/revision: 7
+                        kubectl.kubernetes.io/last-applied-configuration:
+                          {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"1"},"creationTimestamp":null,"..."
+Selector:               app=vibdep1
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:       app=vibdep1
+  Annotations:  kubectl.kubernetes.io/restartedAt: 2020-03-06T07:24:11Z
+  Containers:
+   dockertraining:
+    Image:        vibhuti57/dockertraining:v1
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   vibdep1-67f466b6b6 (1/1 replicas created)
+Events:
+  Type    Reason             Age                  From                   Message
+  ----    ------             ----                 ----                   -------
+  Normal  ScalingReplicaSet  115s (x2 over 131m)  deployment-controller  Scaled up replica set vibdep1-797c578967 to 1
+  Normal  ScalingReplicaSet  113s                 deployment-controller  Scaled down replica set vibdep1-5759548947 to 0
+  Normal  ScalingReplicaSet  108s (x2 over 98m)   deployment-controller  Scaled up replica set vibdep1-7bc7794ddf to 1
+  Normal  ScalingReplicaSet  106s (x2 over 98m)   deployment-controller  Scaled down replica set vibdep1-797c578967 to 0
+  Normal  ScalingReplicaSet  28s (x2 over 89m)    deployment-controller  Scaled up replica set vibdep1-67f466b6b6 to 1
+  Normal  ScalingReplicaSet  26s (x2 over 89m)    deployment-controller  Scaled down replica set vibdep1-7bc7794ddf to 0
+
+---------------------------------------------------------------------------------------------------------
