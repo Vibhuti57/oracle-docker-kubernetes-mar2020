@@ -630,3 +630,32 @@ spec:
 status: {}
 
 ---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day5app]$ cat vibpodwithemptydirvol.yml 
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: vibhuti   #  namespace  define 
+  creationTimestamp: null
+  labels:
+    run: vibpodday5
+  name: vibpodday5
+spec:
+  volumes:                 #  we are  creating  a volume of kind emptydir
+   - name: vibvol
+     # emptyDir: {}   #  it will be automatically deleted once u delete pod
+     hostname:
+      path: /etc
+      type: Directory 
+ containers:
+  - image: alpine
+    name: vibpodday5
+    command:  ["/bin/sh","-c","ls /mnt > /data.txt"]  # here we are replacing  entrypoint of dockerfile
+    volumeMounts:
+     - name: vibvol
+       mountPath: /mnt    #  i am mounting  under mnt of container 
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+---------------------------------------------------------------------------------------------------------
+
