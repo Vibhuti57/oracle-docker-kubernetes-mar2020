@@ -603,3 +603,30 @@ Events:
   Normal  ScalingReplicaSet  26s (x2 over 89m)    deployment-controller  Scaled down replica set vibdep1-7bc7794ddf to 0
 
 ---------------------------------------------------------------------------------------------------------
+[vibhuti@ip-172-31-39-204 day5app]$ vim vibpodwithemptydirvol.yml 
+[vibhuti@ip-172-31-39-204 day5app]$ cat vibpodwithemptydirvol.yml 
+apiVersion: v1i
+kind: Pod
+metadata:
+  namespace: vibhuti   #  namespace  define 
+  creationTimestamp: null
+  labels:
+    run: vibpodday5
+  name: vibpodday5
+spec:
+  volumes:                 #  we are  creating  a volume of kind emptydir
+   - name: vibvol
+     emptyDir: {}   #  it will be automatically deleted once u delete pod
+  containers:
+  - image: alpine
+    name: vibpodday5
+    command:  ["/bin/sh","-c","ping fb.com"]  # here we are replacing  entrypoint of dockerfile
+    volumeMounts:
+     - name: vibvol
+       mountPath: /mnt    #  i am mounting  under mnt of container 
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+---------------------------------------------------------------------------------------------------------
