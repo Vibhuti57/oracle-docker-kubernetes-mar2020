@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - image: vibhuti57/dockertraining:v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: dockertraining
         resources: {}
         terminationMessagePath: /dev/termination-log
